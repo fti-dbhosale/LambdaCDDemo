@@ -7,10 +7,7 @@ orbs:
   sam: circleci/aws-serverless@1.0.1
 
 workflows:
-  install_sam:
-    jobs:
-      - checkout
-      - sam/install
+  
   build_and_deploy:
     jobs:
       # 4. imported-name/job
