@@ -10,8 +10,6 @@ workflows:
   build_and_deploy:
     jobs:
       # 4. imported-name/job
-      - checkout
-      - sam/install
       - sam/deploy:
           name: deploy-production
           s3-bucket: $AWS_ARTIFACT_BUCKET
