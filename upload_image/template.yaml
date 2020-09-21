@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Setting thermal-events
+Globals:
+  Function:
+    Runtime: !Ref PythonRuntime
+    MemorySize: 256
+    Timeout: 15
+    CodeUri:
+      Bucket: !Ref LambdaCodeS3Bucket
+      Key: !Ref LambdaCodeS3Key
+
+Resources:
+
+  UploadApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: upload-api
+      StageName: !Ref RealmName
+      BinaryMediaTypes:
+        - multipart/form-data
+      Cors:
+        AllowMethods: "'*'"
+        AllowHeaders: "'*'"
+        AllowOrigin: "'*'"
+
+
+  UploadImageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub UploadImageFunction-${RealmName}
+      CodeUri: lambda
+      Handler: upload_image.put
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "dynamodb:*"
+              Resource:
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
+            - Effect: Allow
+              Action:
+                - "s3:*"
+              Resource:
+                - '*'
+      Events:
+        GetEvents:
+          Type: Api
+          Properties:
+            Path: /upload_image
+            RestApiId: !Ref UploadApi
+            Method: post
+Parameters:
+  InstanceName:
+    Default: dev
+    Description: The name of this instance
+    Type: String
+    MinLength: '2'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9]*'
+    ConstraintDescription: >-
+      must begin with a letter, at least two characters, and contain only alphanumeric characters.
+  Version:
+    Description: stack version.
+    Type: String
+    Default: 0.1
+  LambdaCodeS3Bucket:
+    Description: The S3 Bucket of lambda code
+    Type: String
+    Default: demo-lambda-pipeline
+  LambdaCodeS3Key:
+    Description: The S3 Key of lambda code
+    Type: String
+    Default: test.cloudformation
+  RealmName:
+    Description: target data realm.
+    Type: String
+    Default: dev
+  PythonRuntime:
+    Description: Python runtime
+    Type: String
+    Default: python3.8

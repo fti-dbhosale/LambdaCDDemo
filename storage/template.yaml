@@ -1,0 +1,182 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Setting thermal-events
+Globals:
+  Function:
+    Runtime: !Ref PythonRuntime
+    MemorySize: 256
+    Timeout: 15
+    CodeUri:
+      Bucket: !Ref LambdaCodeS3Bucket
+      Key: !Ref LambdaCodeS3Key
+
+Resources:
+  ActivityLogTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Join
+        - ''
+        - - ActivityLog-
+          - !Ref RealmName
+      AttributeDefinitions:
+        - AttributeName: DeviceID
+          AttributeType: S
+        - AttributeName: RecordID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: DeviceID
+          KeyType: HASH
+        - AttributeName: RecordID
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+
+  MarkerLogTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Join
+        - ''
+        - - MarkerLog-
+          - !Ref RealmName
+      AttributeDefinitions:
+        - AttributeName: DeviceID
+          AttributeType: S
+        - AttributeName: RecordID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: DeviceID
+          KeyType: HASH
+        - AttributeName: RecordID
+          KeyType: RANGE
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      ProvisionedThroughput:
+        ReadCapacityUnits: '5'
+        WriteCapacityUnits: '5'
+
+  MarkerLogTableEventPublisher:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      CodeUri: ./lambda
+      Handler: markerLogTableEventPublisher.lambda_handler
+      FunctionName: !Sub MarkerLogTableEventPublisher-${RealmName}
+      Role:
+        Fn::GetAtt: [ LambdaRole , Arn ]
+      Environment:
+        Variables:
+          ENV_TARGET_SNS_TOPIC_ARN: !Ref MarkerLogTableSNSTopic
+
+  MarkerLogTableSNSTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      TopicName: !Sub 'MarkerLogTableSNSTopic-${RealmName}'
+      DisplayName: Notify MarkerLog Event.
+
+  MarkerLogTableSNSTopicPolicy:
+    Type: 'AWS::SNS::TopicPolicy'
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: 'sns:Publish'
+            Resource: !Ref MarkerLogTableSNSTopic
+      Topics:
+        - !Ref MarkerLogTableSNSTopic
+
+  MarkerLogTableStream:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 1 #trigger one lambda per document
+      Enabled: True
+      EventSourceArn: #trigger event from the data table
+        Fn::GetAtt: [ MarkerLogTable , StreamArn ]
+      FunctionName: #trigger the echo function previously defined
+        Fn::GetAtt: [ MarkerLogTableEventPublisher , Arn ]
+      StartingPosition: LATEST #always start at the tail of the stream
+
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow #allow lambda to assume this role
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: LambdaRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow #allow to write logs to cloudwatch
+              Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: arn:aws:logs:*:*:*
+            - Effect: Allow #allow lambda to read from the event stream
+              Action:
+              - dynamodb:DescribeStream
+              - dynamodb:GetRecords
+              - dynamodb:GetShardIterator
+              - dynamodb:ListStreams
+              Resource: "*"
+        - PolicyName: SNSLambdaRolePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+              - sns:Publish
+              Resource: '*'
+              
+Parameters:
+  InstanceName:
+    Default: dev
+    Description: The name of this instance
+    Type: String
+    MinLength: '2'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9]*'
+    ConstraintDescription: >-
+      must begin with a letter, at least two characters, and contain only alphanumeric characters.
+  Version:
+    Description: stack version.
+    Type: String
+    Default: 0.1
+  LambdaCodeS3Bucket:
+    Description: The S3 Bucket of lambda code
+    Type: String
+    Default: demo-lambda-pipeline
+  LambdaCodeS3Key:
+    Description: The S3 Key of lambda code
+    Type: String
+    Default: test.cloudformation
+  RealmName:
+    Description: target data realm.
+    Type: String
+    Default: dev
+  PythonRuntime:
+    Description: Python runtime
+    Type: String
+    Default: python3.8
+Outputs:
+  # Find out more about other implicit resources you can reference within SAM
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
+  MarkerLogTableSNSTopic:
+    Description: "Events dispatcher lambda function ARN"
+    Value: !Ref MarkerLogTableSNSTopic
+    Export:
+      Name: MarkerLogTableSNSTopic-dev-Arn

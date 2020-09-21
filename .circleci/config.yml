@@ -16,17 +16,19 @@ workflows:
   test_and_deploy:
     jobs:
       - sam/deploy:
-          name: deploy-staging
+          name: deploy-storage
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
-          stack-name: staging-stack
-          template: template.yaml
-      - test_my_api:
-          requires:
-            - deploy-staging
+          stack-name: storage-stack
+          template: storage/template.yaml
+
       - sam/deploy:
-          name: deploy-production
-          requires:
-            - test_my_api
+          name: deploy-upload-image
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
-          stack-name: production-stack
-          template: template.yaml
+          stack-name: upload-image
+          template: upload_image/template.yaml
+
+      - sam/deploy:
+          name: deploy-event-api
+          s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
+          stack-name: fti-events
+          template: events/cloudformation/template.yaml
