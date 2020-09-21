@@ -2,13 +2,6 @@ import decimal
 import json
 import boto3
 import logging
-from boto3.dynamodb.conditions import Key
-from boto.cloudfront.distribution import Distribution
-from boto.cloudfront import CloudFrontConnection
-from botocore.client import BaseClient
-from botocore.signers import CloudFrontSigner
-from datetime import datetime, timedelta
-import rsa
 from urllib.parse import quote
 import os
 from constant import CLOUD_FRONT_BASE_PROTOCOL
