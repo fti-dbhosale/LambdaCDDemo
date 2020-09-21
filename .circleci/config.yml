@@ -40,7 +40,6 @@ workflows:
       - sam/deploy:
           name: deploy-event-api
           requires:
-            - deploy-storage
             - build
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: fti-events
