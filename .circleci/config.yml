@@ -7,14 +7,21 @@ orbs:
   sam: circleci/aws-sam-serverless@2.0.0
 
 jobs:
-  test_my_api:
-    executor: sam/default
+  jobs:
+  build:
+    executor: python/default
     steps:
-      - run: echo "Run your tests here"
+      - checkout
+      - run:
+          command: |
+            pip install -r events/lambda/api/requirements.txt
 
 workflows:
   test_and_deploy:
     jobs:
+
+      - build
+
       - sam/deploy:
           name: deploy-storage
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
@@ -33,6 +40,7 @@ workflows:
           name: deploy-event-api
           requires:
             - deploy-storage
+            - build
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: fti-events
           template: events/cloudformation/template.yaml
