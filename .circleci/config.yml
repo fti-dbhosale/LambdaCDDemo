@@ -4,14 +4,27 @@ version: 2.1
 # 2. Bring in the current version of the aws-serverless orb
 orbs:
   # 3. We name our imported orb “sam”
-  sam: circleci/aws-serverless@1.0.1
+  sam: circleci/aws-sam-serverless@2.0.0
+
+jobs:
+  test_my_api:
+    executor: sam/default
+    steps:
+      - run: echo "Run your tests here"
 
 workflows:
-  build_and_deploy:
+  test_and_deploy:
     jobs:
-      # 4. imported-name/job
+      - sam/deploy:
+          name: deploy-staging
+          stack-name: staging-stack
+          template: template.yml
+      - test_my_api:
+          requires:
+            - deploy-staging
       - sam/deploy:
           name: deploy-production
-          s3-bucket: $AWS_ARTIFACT_BUCKET
+          requires:
+            - test_my_api
           stack-name: production-stack
-          template: template.yaml
+          template: template.yml
