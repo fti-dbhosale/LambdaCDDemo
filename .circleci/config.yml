@@ -5,6 +5,7 @@ version: 2.1
 orbs:
   # 3. We name our imported orb “sam”
   sam: circleci/aws-sam-serverless@2.0.0
+  python: circleci/python@3.8
 
 jobs:
   jobs:
