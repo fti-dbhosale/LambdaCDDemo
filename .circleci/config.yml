@@ -18,17 +18,21 @@ workflows:
       - sam/deploy:
           name: deploy-storage
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
-          stack-name: storage-stack
+          stack-name: storage-events
           template: storage/template.yaml
 
       - sam/deploy:
           name: deploy-upload-image
+          requires:
+            - deploy-storage
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: upload-image
           template: upload_image/template.yaml
 
       - sam/deploy:
           name: deploy-event-api
+          requires:
+            - deploy-storage
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: fti-events
           template: events/cloudformation/template.yaml
