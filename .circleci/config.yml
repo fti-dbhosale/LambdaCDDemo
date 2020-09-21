@@ -19,7 +19,7 @@ workflows:
           name: deploy-staging
           s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: staging-stack
-          template: template.yml
+          template: template.yaml
       - test_my_api:
           requires:
             - deploy-staging
@@ -27,6 +27,6 @@ workflows:
           name: deploy-production
           requires:
             - test_my_api
-          s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx  
+          s3-bucket: aws-sam-cli-managed-default-samclisourcebucket-no5vp6ouattx
           stack-name: production-stack
-          template: template.yml
+          template: template.yaml
