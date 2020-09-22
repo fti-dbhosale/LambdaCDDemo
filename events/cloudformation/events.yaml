@@ -38,7 +38,7 @@ Resources:
         - AttributeName: EventDate
           KeyType: RANGE
       GlobalSecondaryIndexes:
-        - IndexName: userID-eventCategory-zoneID-GSI
+        - IndexName: userID-eventCategory-zoneID-EventDate-index
           KeySchema:
             - AttributeName: userID-eventCategory-zoneID
               KeyType: HASH
@@ -49,7 +49,7 @@ Resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 5
             WriteCapacityUnits: 5
-        - IndexName: userID-eventCategory-personID-GSI
+        - IndexName: userID-eventCategory-personID-EventDate-index
           KeySchema:
             - AttributeName: userID-eventCategory-personID
               KeyType: HASH
@@ -81,7 +81,7 @@ Resources:
             ProjectionType: ALL
           ProvisionedThroughput:
             ReadCapacityUnits: 5
-            WriteCapacityUnits: 5            
+            WriteCapacityUnits: 5
       ProvisionedThroughput:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
