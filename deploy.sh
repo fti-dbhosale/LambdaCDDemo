@@ -45,7 +45,7 @@ if true; then
         --aws-profile ) validate_argument $2; AWS_PROFILE=$2; shift 2 ;;
         --with-events ) EVENTS_DEPLOY_FLAG=true; shift ;;
         --help ) usage; shift ;;
-        
+
     esac
 fi
 
@@ -75,6 +75,7 @@ deploy() {
     fi
 
     if "${EVENTS_DEPLOY_FLAG}"; then
+        echo 'test1'
         pushd ./events/cloudformation
         ./deploy.sh ${AWS_PROFILE_OPTION} --parameter-local-file-path ${PARAMETER_FILE_ABSOLUTE_PATH}
         if [ $? -ne 0 ]; then
