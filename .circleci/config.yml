@@ -33,7 +33,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
 version: 2.1
 jobs:
   events_build:
-    working_directory: ~/scorer-cloud-aws
+    working_directory: ~/sLambdaCDDemo
     environment:
       TRIGGER_BRANCH: << pipeline.git.branch >>
     docker:
@@ -49,6 +49,11 @@ jobs:
           PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
           STACK_FLAG: --with-events
     <<: *test_dev_stack_deploy_steps
+  build:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - run: echo "All build steps completed."    
 
 workflows:
   version: 2
