@@ -38,11 +38,14 @@ AWS_PROFILE=""
 EVENTS_DEPLOY_FLAG=false
 
 while true; do
+  echo 'hello'
     case "$1" in
+
         --parameter-local-file-path ) validate_argument $2; PARAMETER_LOCAL_FILE_PATH=$2; shift 2 ;;
         --aws-profile ) validate_argument $2; AWS_PROFILE=$2; shift 2 ;;
         --with-events ) EVENTS_DEPLOY_FLAG=true; shift ;;
-
+        --help ) usage; shift ;;
+        * ) shift; break ;;
     esac
 done
 
