@@ -33,7 +33,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
 version: 2.1
 jobs:
   events_build:
-    working_directory: ~/sLambdaCDDemo
+    working_directory: ~/LambdaCDDemo
     environment:
       TRIGGER_BRANCH: << pipeline.git.branch >>
     docker:
@@ -53,7 +53,7 @@ jobs:
     docker:
       - image: circleci/node:12
     steps:
-      - run: echo "All build steps completed."    
+      - run: echo "All build steps completed."
 
 workflows:
   version: 2
