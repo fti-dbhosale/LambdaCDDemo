@@ -35,7 +35,7 @@ jobs:
   event-deploy-test-dev:
     working_directory: ~/LambdaCDDemo
     docker:
-      - image: futurestandard/scorer-cloud-deploy:1.2
+      - image: fti/cloud-deploy:1.2
         environment:
           AWS_REGION: ap-south-1
           PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
