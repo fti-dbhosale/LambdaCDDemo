@@ -4,8 +4,6 @@ function dir_error() {
     echo "Scorer Cloud API deploy script must be executed from the project root directory."
     exit 1
 }
-readonly SCRIPT_MODULE_DIR="./"
-. ${SCRIPT_MODULE_DIR}script-module/scorer-util.sh || dir_error
 
 function usage() {
     cat <<_EOT_
@@ -59,8 +57,6 @@ PARAMETER_FILE_ABSOLUTE_PATH=$(pwd)/$(dirname ${PARAMETER_LOCAL_FILE_PATH})/$(ba
 if [ -n "${AWS_PROFILE}" ]; then
     AWS_PROFILE_OPTION="--aws-profile ${AWS_PROFILE}"
 fi
-
-JSON_PARAMS_FILE=`create_parameter_file ${PARAMETER_FILE_ABSOLUTE_PATH} ${SCRIPT_MODULE_DIR}`
 
 function deploy() {
     export IS_MASTER_DEPLOY=true
