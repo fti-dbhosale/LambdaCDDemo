@@ -24,7 +24,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         at: ~/LambdaCDDemo
     - run:
         name: Deploy Stack
-        command: ./deploy.sh --parameter-local-file-path $PARAMETER_LOCAL_FILE_PATH $STACK_FLAG
+        command: ./deploy.sh
 
 # Does this even still work?
 # notify:
