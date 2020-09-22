@@ -42,9 +42,7 @@ while true; do
         --parameter-local-file-path ) validate_argument $2; PARAMETER_LOCAL_FILE_PATH=$2; shift 2 ;;
         --aws-profile ) validate_argument $2; AWS_PROFILE=$2; shift 2 ;;
         --with-events ) EVENTS_DEPLOY_FLAG=true; shift ;;
-        --help ) usage; shift ;;
-        -* | --* ) usage; shift; break ;;
-        * ) shift; break ;;
+
     esac
 done
 
