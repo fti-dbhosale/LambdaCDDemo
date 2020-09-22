@@ -1,0 +1,195 @@
+RealmName: dev
+InstanceName: dev
+ScorerApiVersion: 1-41-0
+StorageEventFunctionVersion: 1-13
+EventsFunctionVersion: 1-0
+AuthenticationEventFunctionVersion: 1-2
+ClusterEventFunctionVersion: 1-0
+ScorerAdminFunctionVersion: 1-0
+S3BucketNamePrefix: future-standard.test.scorer
+AWSRegion: ap-northeast-1
+CodeUploadBucket: future-standard.test.cloudformation
+HostedZoneId: Z26QV6APUHCW5G
+LicenseUrl: https://license-dev.test.scorer.jp
+AllowedOrigins:
+  - https://staging.test.scorer.jp
+  - https://preview.scorer.jp
+  - http://localhost:4000
+CloudFrontKeyPair:
+  ID: APKAJR47UOE6YC4IYWZA
+  Bucket: future-standard.test.keys
+  FileKey: cloudfront/pk-APKAJR47UOE6YC4IYWZA.pem
+Cognito:
+  DatasetName: ScorerStarter
+Lambda:
+  DefaultNodeRuntime: nodejs12.x
+  EdgeNodeRuntime: nodejs10.x
+  DefaultPythonRuntime: python3.8
+S3Retention:
+  Synthesized:
+    DefaultRetention: "031"
+    Tags:
+      Texts:
+        "031":
+          ID: S31-IA0-G0-V7-E31
+          ExpirationInDays: 31
+          NoncurrentVersionExpirationInDays: 7
+UserStorage:
+  StorageLimitInMB: 1000
+UserDataRetention:
+  BillingRate: 0.2
+  DefaultRetention: "007"
+  Retentions:
+    "001":
+      TagValue: D001
+      ExpirationInDays: 1
+      NoncurrentVersionExpirationInDays: 1
+    "003":
+      TagValue: D003
+      ExpirationInDays: 3
+      NoncurrentVersionExpirationInDays: 1
+    "007":
+      TagValue: D007
+      ExpirationInDays: 7
+      NoncurrentVersionExpirationInDays: 1
+    "014":
+      TagValue: D014
+      ExpirationInDays: 14
+      NoncurrentVersionExpirationInDays: 7
+    "030":
+      TagValue: D030
+      ExpirationInDays: 30
+      NoncurrentVersionExpirationInDays: 7
+    "060":
+      TagValue: D060
+      ExpirationInDays: 60
+      NoncurrentVersionExpirationInDays: 7
+    "090":
+      TagValue: D090
+      ExpirationInDays: 90
+      NoncurrentVersionExpirationInDays: 7
+    "180":
+      TagValue: D180
+      ExpirationInDays: 180
+      NoncurrentVersionExpirationInDays: 7
+    "365":
+      TagValue: D365
+      ExpirationInDays: 365
+      NoncurrentVersionExpirationInDays: 7
+VPNSettings:
+  URL:  https://kksegalevf.execute-api.ap-northeast-1.amazonaws.com/v1
+  ClusterId: scorervpn-staging
+  StartIP: 192.168.30.2
+  EndIP: 192.168.30.200
+InternalApi:
+  DomainName: internal-api-dev.test.scorer.jp
+  UsagePlanId: 28z4sc
+  ACMCertificateArn: arn:aws:acm:us-east-1:729700637718:certificate/9ac34336-ac42-478a-9abb-6228cf535553
+MediaServer:
+  HostName: https://02x8l8o185.execute-api.ap-northeast-1.amazonaws.com/int
+  IdentityPoolID: ap-northeast-1:5116d972-b3ab-41f8-9c66-7387884e1e95
+VPC:
+  Cidr: 10.100.0.0/16
+UserStorageSync:
+  Subnets:
+    - AvailabilityZone: ap-northeast-1a
+      CidrBlock: 10.100.21.0/24
+    - AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.100.22.0/24
+    - AvailabilityZone: ap-northeast-1d
+      CidrBlock: 10.100.23.0/24
+  Parallel: 1
+  EC2InstanceType: t3.small
+  ClusterName: default
+  AllowedExportRegions:
+    - ap-northeast-1
+  # AMIID: ami-04b968c560d8ce5d1
+  AMIID: ami-0bbf59816a11ef4b5
+LogExtractor:
+  Subnets:
+    - AvailabilityZone: ap-northeast-1a
+      CidrBlock: 10.100.31.0/24
+    - AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.100.32.0/24
+    - AvailabilityZone: ap-northeast-1d
+      CidrBlock: 10.100.33.0/24
+  Parallel: 1
+  EC2InstanceType: r5.large
+  ClusterName: default
+  AMIID: ami-0d9497724aa9d740e
+Download:
+  Subnets:
+    - AvailabilityZone: ap-northeast-1a
+      CidrBlock: 10.100.41.0/24
+    - AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.100.42.0/24
+    - AvailabilityZone: ap-northeast-1d
+      CidrBlock: 10.100.43.0/24
+  Parallel: 1
+  EC2InstanceType: c5.large
+  ClusterName: default
+  AMIID: ami-0189cd39137d55a27
+  ExpirationInDays: 7
+Dax:
+  ClusterName: default
+  NodeType: dax.t2.small
+  NodeCount: 2
+  Subnets:
+    - AvailabilityZone: ap-northeast-1a
+      CidrBlock: 10.100.101.0/24
+    - AvailabilityZone: ap-northeast-1c
+      CidrBlock: 10.100.102.0/24
+    - AvailabilityZone: ap-northeast-1d
+      CidrBlock: 10.100.103.0/24
+  Endpoint: dax-cluster-dev.test.scorer.jp
+PublicApi:
+  Version: v1
+  VersionPrefix: 1-7
+  EdgeCodeUploadBucket: future-standard.test.cloudformation.us
+  DomainName: api-dev.test.scorer.jp
+  ACMCertificateArn: arn:aws:acm:us-east-1:729700637718:certificate/9ac34336-ac42-478a-9abb-6228cf535553
+  LambdaVersionUpdate: true
+  PostVcaJob:
+    OnDemand:
+      PeriodUpperLimitHours: 12
+  Document:
+    PostmanCollectionId: 89169d64-288c-4c05-8407-3998451f668c
+    Title: "[dev] SCORER API"
+    Version: "1.3"
+Stripe:
+  TaxRateID: txr_1FiaGFFm3vDLBdbB5WZjTCw6
+  PublicKey: pk_test_PA39hleMxUExGmEN2eWbj1vU00BT5lX5p1
+DeviceMonitoring:
+  SESRegion: eu-west-1
+  SenderEmailAddress: ops@futurestandard.co.jp
+ScorerUI:
+  DomainName: staging.test.scorer.jp
+  BucketName: future-standard.scorer.cloud.staging.test.port
+  ACMCertificateArn: arn:aws:acm:us-east-1:729700637718:certificate/9ac34336-ac42-478a-9abb-6228cf535553
+  APIDocumentationURL: https://api-docs.scorer.dev
+  OnDemandMax: 12
+  BugherdKey: false
+  Downloads: true
+  CreditCard: true
+  ShowSignup: true
+  ExportServiceFolders: true
+ScorerAdmin:
+  Hostname: admin.test.scorer.jp
+  BucketName: future-standard.scorer.admin.ui.test-dev
+  ACMCertificateArn: arn:aws:acm:us-east-1:729700637718:certificate/9ac34336-ac42-478a-9abb-6228cf535553
+# optional
+Slack:
+  Deploy:
+    - Url: https://hooks.slack.com/services/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
+      Channel: "#scorer_dev_logs"
+    - Url: https://hooks.slack.com/services/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
+      Channel: "#scorer_dev"
+  Stripe:
+    Url: https://hooks.slack.com/services/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
+    Channel: "#dev_notify"
+  SenseVideoTrial:
+    Url: https://hooks.slack.com/services/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
+    Channel: "#dev_notify"
+  LogExtractor:
+    Url: https://hooks.slack.com/services/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
+    Channel: "#scorer_dev"
