@@ -24,7 +24,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         at: ~/LambdaCDDemo
     - run:
         name: Deploy Stack
-        command: ./deploy.sh
+        command: sh ./deploy.sh
 
 # Does this even still work?
 # notify:
