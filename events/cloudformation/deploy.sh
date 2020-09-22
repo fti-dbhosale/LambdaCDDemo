@@ -4,8 +4,6 @@ function dir_error() {
     echo "Please execute on the directory where the script is located."
     exit 1
 }
-readonly SCRIPT_MODULE_DIR="../../"
-. ${SCRIPT_MODULE_DIR}script-module/scorer-util.sh || dir_error
 
 
 function usage() {
