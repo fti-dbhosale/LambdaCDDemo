@@ -37,7 +37,7 @@ PARAMETER_LOCAL_FILE_PATH=""
 AWS_PROFILE=""
 EVENTS_DEPLOY_FLAG=false
 
-while true; do
+if true; then
   echo 'test'
     case "$1" in
 
@@ -47,7 +47,7 @@ while true; do
         --help ) usage; shift ;;
         
     esac
-done
+fi
 
 if [ -z "${PARAMETER_LOCAL_FILE_PATH}" ]; then
     usage
