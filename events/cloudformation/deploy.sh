@@ -21,15 +21,6 @@ _EOT_
 }
 
 
-function validate_dependencies() {
-    validate_common_dependencies
-
-    which uuidgen || {
-        echo "Please install uuidgen"
-        exit 1
-    }
-}
-
 PARAMETER_FILE_URL=""
 PARAMETER_LOCAL_FILE_PATH=""
 AWS_PROFILE=""
@@ -47,7 +38,6 @@ done
 # Args validation
 
 # Dependencies validation
-validate_dependencies
 
 # Get parameter
 CODE_UPLOAD_BUCKET=CODE_UPLOAD_BUCKET
