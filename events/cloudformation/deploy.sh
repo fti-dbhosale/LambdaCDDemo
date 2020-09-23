@@ -11,7 +11,7 @@ CODE_ZIP="events-function.zip"
  pushd ../
  rm ./cloudformation/${CODE_ZIP}
 
- cd ./lambda/api
+ cd ./events/lambda/api
  pip3 install -r ./requirements.txt --target ./
  run zip -q ../../cloudformation/${CODE_ZIP} \
  ls
