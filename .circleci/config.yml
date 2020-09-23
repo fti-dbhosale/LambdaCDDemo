@@ -28,13 +28,13 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
           apt-get update
           apt-get install -y jq zip python3-pip
           pip3 install awscli --upgrade
-          pip3 install aws-sam-cli
           ls
     - run:
         name: Deploy Stack
         command: |
           ls
-          ./events/cloudformation/deploy.sh
+          cd events/cloudformation
+          .deploy.sh
 
 # Does this even still work?
 # notify:
