@@ -1,11 +1,44 @@
+#!/bin/bash
+
 dir_error() {
     echo "Cloud API deploy script must be executed from the project root directory."
     exit 1
 }
 
+usage() {
+    cat <<_EOT_
+Decription:
+  Deploy the cloud-aws platform.
+Usage:
+    $0
+    --parameter-local-file-path <value>
+    [--aws-profile <value>]
+    [--with-events]
+    [--help]
+
+Options:
+    --parameter-local-file-path (string)
+        The path of the parameter local file.
+
+    --aws-profile (string: optional)
+        AWS CLI profile name
+        default: none
+
+    --with-events (boolean: optional)
+        If present, also deploy the Scorer console UI stack.
+
+    --help
+        Show usage.
+_EOT_
+    exit 1
+}
+
+
 PARAMETER_LOCAL_FILE_PATH=""
 AWS_PROFILE=""
 EVENTS_DEPLOY_FLAG=false
+
+echo "$1"
 
 while true; do
     case "$1" in
