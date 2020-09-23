@@ -28,9 +28,12 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
           apt-get update
           apt-get install -y jq zip python3-pip
           pip3 install awscli --upgrade
+          ls
     - run:
         name: Deploy Stack
-        command: sh events/cloudformation/deploy.sh
+        command: |
+          ls
+          sh events/cloudformation/deploy.sh
 
 # Does this even still work?
 # notify:
