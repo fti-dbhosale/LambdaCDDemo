@@ -9,8 +9,6 @@ function usage() {
     cat <<_EOT_
 Usage:
     $0
-    [--parameter-file-url <value>]
-    [--parameter-local-file-path <value>]
     [--aws-profile <value>]
     [--help]
 Options:
@@ -32,22 +30,6 @@ function validate_dependencies() {
     }
 }
 
-
-function validate_arguments() {
-    if [ -n "${PARAMETER_LOCAL_FILE_PATH}" ]; then
-        return
-    fi
-
-    if [ -z "${PARAMETER_FILE_URL}" ]; then
-        usage
-    fi
-}
-
-function parameter_error() {
-    echo "Parameter error: ${1}"
-}
-
-
 PARAMETER_FILE_URL=""
 PARAMETER_LOCAL_FILE_PATH=""
 AWS_PROFILE=""
@@ -63,7 +45,6 @@ while true; do
 done
 
 # Args validation
-validate_arguments
 
 # Dependencies validation
 validate_dependencies
