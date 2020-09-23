@@ -3,6 +3,8 @@
 UUID=""
 NOW=`date "+%Y%m%d_%H%M%S"`
 CODE_S3_PREFIX="${NOW}/${UUID}"
+pushd ../
+ls
 
 echo $CODE_S3_PREFIX
 echo $AWS_PROFILE
