@@ -47,12 +47,12 @@ jobs:
       TRIGGER_BRANCH: << pipeline.git.branch >>
     docker:
       # Not Sure if API build needs this image in order to run ffmpeg/ffprobe in unit tests TODO POC
-      - image: buildpack-deps:xenial
+      - image: ubuntu
     <<: *events_build_steps
   event-deploy-test-dev:
     working_directory: ~/LambdaCDDemo
     docker:
-      - image: buildpack-deps:xenial
+      - image: ubuntu
         environment:
           AWS_REGION: ap-south-1
           PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
