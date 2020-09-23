@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 echo "hello"
-aws help
+aws lambda list-functions

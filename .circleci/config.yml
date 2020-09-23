@@ -27,7 +27,6 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         command: |
           apt-get update
           apt-get install -y jq zip python3-pip
-          apt-get install awscli
           pip3 install awscli --upgrade
           ls
     - run:
