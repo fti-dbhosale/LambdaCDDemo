@@ -33,7 +33,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         name: Deploy Stack
         command: |
           ls
-          sh events/cloudformation/deploy.sh
+          events/cloudformation/deploy.sh
 
 # Does this even still work?
 # notify:
