@@ -34,7 +34,9 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         command: |
           ls
           cd events/cloudformation
-          .deploy.sh
+          pushd ../
+
+          sh ./cloudformation/deploy.sh
 
 # Does this even still work?
 # notify:
