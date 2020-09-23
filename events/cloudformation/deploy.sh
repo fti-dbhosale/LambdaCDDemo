@@ -9,6 +9,7 @@ echo $AWS_PROFILE
 #aws lambda list-functions
 CODE_ZIP="events-function.zip"
 ls
+sam --info
 sam build
  cd ./events/lambda/api
  #run zip -q ../../cloudformation/${CODE_ZIP} \
