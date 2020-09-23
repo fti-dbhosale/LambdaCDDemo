@@ -1,6 +1,6 @@
 echo "print statement"
 
-function fun1(){
+fun1(){
   echo "Printing fun1"
 }
 
