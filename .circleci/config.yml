@@ -21,10 +21,10 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
 
     - checkout
     - attach_workspace:
-        at: ~/LambdaCDDemo        
+        at: ~/LambdaCDDemo
     - run:
         name: Deploy Stack
-        command: sh ./deploy.sh
+        command: sh ./cloudformation/deploy.sh
 
 # Does this even still work?
 # notify:
