@@ -43,7 +43,7 @@ jobs:
   event-deploy-test-dev:
     working_directory: ~/LambdaCDDemo
     docker:
-      - image: alpine:3.7
+      - image: python:3.8-slim
         environment:
           AWS_REGION: ap-south-1
           PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
