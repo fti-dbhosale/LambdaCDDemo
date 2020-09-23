@@ -5,6 +5,7 @@ dir_error() {
     exit 1
 }
 
+echo $AWS_ACCESS_KEY_ID
 usage() {
     cat <<_EOT_
 Decription:
