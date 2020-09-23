@@ -24,11 +24,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
         at: ~/LambdaCDDemo
     - run:
         name: Deploy Stack
-<<<<<<< HEAD
         command: sh ./cloudformation/deploy.sh
-=======
-        command: sh ../events/cloudformation/deploy.sh
->>>>>>> 581e5b72f0c3307a8ffd3d3accf792035269f722
 
 # Does this even still work?
 # notify:
