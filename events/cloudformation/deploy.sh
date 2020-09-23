@@ -47,65 +47,6 @@ function parameter_error() {
     echo "Parameter error: ${1}"
 }
 
-function validate_parameters() {
-    local is_error=false
-    if [ -z "$CODE_UPLOAD_BUCKET" ]; then
-        parameter_error ${CODE_UPLOAD_BUCKET_PARAM_KEY}
-        is_error=true
-    fi
-    if [ -z "${CLOUD_FRONT_KEY_PAIR_ID}" ]; then
-      parameter_error ${CLOUD_FRONT_KEY_PAIR_ID_PARAM_KEY}
-      is_error=true
-    fi
-
-    if [ -z "${CLOUD_FRONT_KEY_PAIR_BUCKET}" ]; then
-        parameter_error ${CLOUD_FRONT_KEY_PAIR_BUCKET_PARAM_KEY}
-        is_error=true
-    fi
-
-    if [ -z "${CLOUD_FRONT_KEY_PAIR_FILE_KEY}" ]; then
-        parameter_error ${CLOUD_FRONT_KEY_PAIR_FILE_KEY_PARAM_KEY}
-        is_error=true
-    fi
-    # TODO
-    # When deleting getBucketName () in S3Util.js, delete this line as well.
-
-    if [ -z "$S3_BUCKET_NAME_PREFIX" ]; then
-        parameter_error ${S3_BUCKET_NAME_PREFIX_PARAM_KEY}
-        is_error=true
-    fi
-
-    if [ -z "$INSTANCE" ]; then
-        parameter_error ${INSTANCE_PARAM_KEY}
-        is_error=true
-    fi
-
-    if [ -z "$REGION" ]; then
-        parameter_error ${REGION_PARAM_KEY}
-        is_error=true
-    fi
-
-    if [ -z "${LAMBDA_VERSION}" ]; then
-        parameter_error ${LAMBDA_VERSION_PARAM_KEY}
-        is_error=true
-    fi
-
-    # Regex validation for api version
-    if [[ ! ${LAMBDA_VERSION} =~ ^([0-9]+)-([0-9]+)$ ]]; then
-        parameter_error "${LAMBDA_VERSION_PARAM_KEY} validation failed"
-        is_error=true
-    fi
-
-    if [ -z "${DEFAULT_PYTHON_RUNTIME}" ]; then
-        parameter_error ${DEFAULT_PYTHON_RUNTIME_PARAM_KEY}
-        is_error=true
-    fi
-
-    if "${is_error}"; then
-        exit 1
-    fi
-}
-
 
 PARAMETER_FILE_URL=""
 PARAMETER_LOCAL_FILE_PATH=""
@@ -146,7 +87,6 @@ S3_BUCKET_NAME_PREFIX=S3_BUCKET_NAME_PREFIX
 rm -fr ${JSON_PARAMS_FILE}
 
 # Parameter validation
-validate_parameters
 
 # AWS Profile
 AWS_PROFILE_OPTION=`create_aws_profile_option ${AWS_PROFILE}`
