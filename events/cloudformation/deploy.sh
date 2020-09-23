@@ -18,7 +18,7 @@ CODE_ZIP="events-function.zip"
  ls
  . \
  ../dispatcher/
-aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
+aws --region ${REGION} s3 cp ../../cloudformation${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
 cd ../../cloudformation
 ls
 
