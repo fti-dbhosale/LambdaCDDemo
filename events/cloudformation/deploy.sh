@@ -12,7 +12,7 @@ CODE_ZIP="events-function.zip"
 
  cd ./events/lambda/api
  pip3 install -r ./requirements.txt --target ./
- zip -r ../../cloudformation/events-function.zip . -i ls
+ zip -r ../../cloudformation/${CODE_ZIP} .
  ls
  . \
  ../dispatcher/
