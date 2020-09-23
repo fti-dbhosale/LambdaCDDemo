@@ -3,7 +3,9 @@
 UUID=""
 NOW=`date "+%Y%m%d_%H%M%S"`
 CODE_S3_PREFIX="${NOW}/${UUID}"
-
+CODE_UPLOAD_BUCKET="demo-lambda-pipeline"
+REGION="ap-south-1"
+CODE_S3_PREFIX="events-function"
 echo $CODE_S3_PREFIX
 echo $AWS_PROFILE
 #aws lambda list-functions
@@ -16,7 +18,7 @@ CODE_ZIP="events-function.zip"
  ls
  . \
  ../dispatcher/
-
+aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
 cd ../../cloudformation
 ls
 
