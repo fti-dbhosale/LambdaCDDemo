@@ -8,6 +8,18 @@ echo $CODE_S3_PREFIX
 echo $AWS_PROFILE
 #aws lambda list-functions
 CODE_ZIP="events-function.zip"
+ pushd ../
+ rm ./cloudformation/${CODE_ZIP}
+
+ cd ./lambda/api
+ pip3 install -r ./requirements.txt --target ./
+ run zip -q ../../cloudformation/${CODE_ZIP} \
+ ls
+ -r \
+ . \
+ ../dispatcher/
+
+
+
+cd ../
 ls
-pushd ../
-ls 
