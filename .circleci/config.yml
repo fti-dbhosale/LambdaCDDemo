@@ -35,6 +35,28 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
           ls
           sh ./events/cloudformation/deploy.sh
 
+test_dev_storage_deploy_steps: &test_dev_stack_deploy_steps
+  steps:
+    - run: |
+        # these are all provided by circleci project settings > environment variables
+        echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> $BASH_ENV
+        echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> $BASH_ENV
+
+    - checkout
+    - attach_workspace:
+        at: ~/LambdaCDDemo
+    - run:
+        name: Install awscli, jq and npm
+        command: |
+          apt-get update
+          apt-get install -y jq zip python3-pip
+          pip3 install awscli --upgrade
+          ls
+    - run:
+        name: Deploy Stack
+        command: |
+          ls
+          sh ./storage/cloudformation/deploy.sh
 # Does this even still work?
 # notify:
 #   webhooks:
@@ -58,6 +80,15 @@ jobs:
           PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
           STACK_FLAG: --with-events
     <<: *test_dev_stack_deploy_steps
+  storage-deploy-test-dev:
+    working_directory: ~/LambdaCDDemo
+    docker:
+      - image: buildpack-deps:xenial
+        environment:
+          AWS_REGION: ap-south-1
+          PARAMETER_LOCAL_FILE_PATH: config/environment/test-dev.yaml
+          STACK_FLAG: --with-storage
+    <<: *test_dev_storage_deploy_steps
   build:
     docker:
       - image: circleci/node:12
@@ -71,6 +102,7 @@ workflows:
       # pub deploy jobs
       - events_build
       - event-deploy-test-dev
+      - storage-deploy-test-dev
       - build:
           requires:
             - events_build

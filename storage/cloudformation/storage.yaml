@@ -61,7 +61,6 @@ Resources:
   MarkerLogTableEventPublisher:
     Type: 'AWS::Serverless::Function'
     Properties:
-      CodeUri: ./lambda
       Handler: markerLogTableEventPublisher.lambda_handler
       FunctionName: !Sub MarkerLogTableEventPublisher-${RealmName}
       Role:
