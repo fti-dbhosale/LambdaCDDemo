@@ -35,7 +35,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
           ls
           sh ./events/cloudformation/deploy.sh
 
-test_dev_storage_deploy_steps: &test_dev_stack_deploy_steps
+test_dev_storage_deploy_steps: &test_dev_storage_deploy_steps
   steps:
     - run: |
         # these are all provided by circleci project settings > environment variables
