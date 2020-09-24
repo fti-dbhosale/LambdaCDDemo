@@ -20,12 +20,17 @@ echo $CODE_S3_PREFIX
 echo $AWS_PROFILE
 #aws lambda list-functions
 CODE_ZIP="events-function.zip"
- rm ./cloudformation/${CODE_ZIP}
+rm ./cloudformation/${CODE_ZIP}
+cd ./events/lambda/api
 
- cd ./events/lambda/api
- pip3 install -r ./requirements.txt --target ./
- zip -r ../../cloudformation/${CODE_ZIP} .
- ls
+pip3 install -r ./requirements.txt --target ./
+zip -r ../../cloudformation/${CODE_ZIP} .
+
+cd ../dispatcher
+
+pwd
+
+ls
 cd ../../cloudformation
 ls
 aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
