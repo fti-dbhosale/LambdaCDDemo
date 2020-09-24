@@ -30,7 +30,7 @@ cd ../../cloudformation
 ls
 aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
 
-aws --region ${REGION} ${AWS_PROFILE_OPTION} cloudformation deploy \
+aws --region ${REGION} cloudformation deploy \
     --template-file events.yaml \
     --s3-bucket ${CODE_UPLOAD_BUCKET} \
     --s3-prefix ${CODE_S3_PREFIX} \

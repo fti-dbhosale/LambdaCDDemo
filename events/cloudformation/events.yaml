@@ -216,16 +216,13 @@ Resources:
         AllowMethods: "'*'"
         AllowHeaders: "'*'"
         AllowOrigin: "'*'"
-      Auth:
-        DefaultAuthorizer: AWS_IAM
-        InvokeRole: NONE
-        AddDefaultAuthorizerToCorsPreflight: False
 
   EventSearchFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: event_search.search
       Policies:
+      FunctionName: !Sub EventSearchFunction-${RealmName}        
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
@@ -261,6 +258,7 @@ Resources:
   EventGetFunction:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub EventGetFunction-${RealmName}
       Handler: event_details.get
       Policies:
         - Version: "2012-10-17"
@@ -294,19 +292,19 @@ Resources:
             RestApiId: !Ref EventsApi
             Method: post
 
-  ZoneEventSummary:
+  EventPutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: zone_event_summary.get
+      FunctionName: !Sub EventPutFunction-${RealmName}
+      Handler: event_put.put
       Policies:
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action:
-                - "dynamodb:GetItem"
-                - "dynamodb:Query"
+                - "dynamodb:PutItem"
               Resource:
-                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events-*'
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*'
             - Effect: Allow
               Action:
                 - "s3:GetObject"
@@ -314,19 +312,12 @@ Resources:
                 - '*'
       Environment:
         Variables:
-          ENV_EVENT_TABLE_NAME: !Join
-            - ''
-            - - Events-
-              - !Ref RealmName
-          ENV_CloudFrontKeyPairID: !Ref CloudFrontKeyPairID
-          ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
-          ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
-          ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
+          ENV_MARKER_LOG_TABLE_NAME: !Sub MarkerLog-${RealmName}
       Events:
         GetEvents:
           Type: Api
           Properties:
-            Path: /zones
+            Path: /markerlog
             RestApiId: !Ref EventsApi
             Method: post
 
