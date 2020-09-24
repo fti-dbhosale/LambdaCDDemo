@@ -7,7 +7,7 @@ REALM="dev"
 INSTANCE="dev"
 DEFAULT_PYTHON_RUNTIME="python3.8"
 NOW=`date "+%Y%m%d_%H%M%S"`
-CODE_S3_PREFIX="${NOW}/${UUID}"
+CODE_S3_PREFIX=${NOW}
 CODE_UPLOAD_BUCKET="demo-lambda-pipeline"
 REGION="ap-south-1"
 CODE_S3_PREFIX="events-function"
@@ -15,12 +15,12 @@ CloudFrontKeyPairFileKey=""
 CloudFrontDeviceImagesBucketDomainName=""
 CloudFrontKeyPairID=""
 CloudFrontKeyPairBucket=""
-
+echo "Code prefix"
 echo $CODE_S3_PREFIX
-echo $AWS_PROFILE
+echo "Code prefix"
 #aws lambda list-functions
 CODE_ZIP="events-function.zip"
-rm ./cloudformation/${CODE_ZIP}
+rm ./events/cloudformation/${CODE_ZIP}
 cd ./events/lambda/api
 
 pip3 install -r ./requirements.txt --target ./
