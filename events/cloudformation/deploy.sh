@@ -11,6 +11,11 @@ CODE_S3_PREFIX="${NOW}/${UUID}"
 CODE_UPLOAD_BUCKET="demo-lambda-pipeline"
 REGION="ap-south-1"
 CODE_S3_PREFIX="events-function"
+CloudFrontKeyPairFileKey=""
+CloudFrontDeviceImagesBucketDomainName=""
+CloudFrontKeyPairID=""
+CloudFrontKeyPairBucket=""
+
 echo $CODE_S3_PREFIX
 echo $AWS_PROFILE
 #aws lambda list-functions
@@ -38,4 +43,7 @@ aws --region ${REGION} ${AWS_PROFILE_OPTION} cloudformation deploy \
     LambdaCodeS3Bucket=${CODE_UPLOAD_BUCKET} \
     LambdaCodeS3Key="${CODE_S3_PREFIX}/${CODE_ZIP}" \
     RealmName=${REALM} \
-    PythonRuntime=${DEFAULT_PYTHON_RUNTIME}
+    PythonRuntime=${DEFAULT_PYTHON_RUNTIME} \
+    CloudFrontKeyPairID=${CLOUD_FRONT_KEY_PAIR_ID} \
+    CloudFrontKeyPairBucket=${CLOUD_FRONT_KEY_PAIR_BUCKET} \
+    CloudFrontKeyPairFileKey=${CLOUD_FRONT_KEY_PAIR_FILE_KEY}

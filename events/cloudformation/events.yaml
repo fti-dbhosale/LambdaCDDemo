@@ -249,8 +249,7 @@ Resources:
           ENV_CloudFrontKeyPairID: !Ref CloudFrontKeyPairID
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
-          ENV_CloudFrontDeviceImagesBucketDomainName:
-            Fn::ImportValue: !Sub DevicesImagesBucketDistribution-${RealmName}-DomainName
+          ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
       Events:
         GetEvents:
           Type: Api
@@ -286,8 +285,7 @@ Resources:
           ENV_CloudFrontKeyPairID: !Ref CloudFrontKeyPairID
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
-          ENV_CloudFrontDeviceImagesBucketDomainName:
-            Fn::ImportValue: !Sub DevicesImagesBucketDistribution-${RealmName}-DomainName
+          ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
       Events:
         GetEvents:
           Type: Api
@@ -323,8 +321,7 @@ Resources:
           ENV_CloudFrontKeyPairID: !Ref CloudFrontKeyPairID
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
-          ENV_CloudFrontDeviceImagesBucketDomainName:
-            Fn::ImportValue: !Sub DevicesImagesBucketDistribution-${RealmName}-DomainName
+          ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
       Events:
         GetEvents:
           Type: Api
@@ -367,9 +364,6 @@ Parameters:
     Type: String
   CloudFrontKeyPairFileKey:
     Description: CloudFront Key Pair File Key
-    Type: String
-  CloudFrontDeviceImagesBucketDomainName:
-    Description: CloudFront Device Images Bucket Domain Name
     Type: String
 Outputs:
   # Find out more about other implicit resources you can reference within SAM
