@@ -100,9 +100,7 @@ workflows:
   build-and-deploy:
     jobs:
       # pub deploy jobs
-      - events_build
-      - event-deploy-test-dev
       - storage-deploy-test-dev
-      - build:
+      - event-deploy-test-dev:
           requires:
-            - events_build
+            - storage-deploy-test-dev
