@@ -17,32 +17,37 @@ CloudFrontKeyPairID=""
 CloudFrontKeyPairBucket=""
 
 CODE_ZIP="events-function.zip"
-rm ./events/cloudformation/${CODE_ZIP}
-cd ./events/lambda/api
 
-pip3 install -r ./requirements.txt --target ./
-cp -r /root/LambdaCDDemo/events/lambda/dispatcher dispatcher
-zip -r ../../cloudformation/${CODE_ZIP} .
+deploy(){
+  rm ./events/cloudformation/${CODE_ZIP}
+  cd ./events/lambda/api
 
-ls
-cd ../../cloudformation
-ls
-aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
+  pip3 install -r ./requirements.txt --target ./
+  cp -r /root/LambdaCDDemo/events/lambda/dispatcher dispatcher
+  zip -r ../../cloudformation/${CODE_ZIP} .
 
-aws --region ${REGION} cloudformation deploy \
-    --template-file events.yaml \
-    --s3-bucket ${CODE_UPLOAD_BUCKET} \
-    --s3-prefix ${CODE_S3_PREFIX} \
-    --stack-name ${STACK_NAME} \
-    --capabilities CAPABILITY_NAMED_IAM \
-    --no-fail-on-empty-changeset \
-    --parameter-overrides \
-    InstanceName=${INSTANCE} \
-    Version=${LAMBDA_VERSION} \
-    LambdaCodeS3Bucket=${CODE_UPLOAD_BUCKET} \
-    LambdaCodeS3Key="${CODE_S3_PREFIX}/${CODE_ZIP}" \
-    RealmName=${REALM} \
-    PythonRuntime=${DEFAULT_PYTHON_RUNTIME} \
-    CloudFrontKeyPairID=${CLOUD_FRONT_KEY_PAIR_ID} \
-    CloudFrontKeyPairBucket=${CLOUD_FRONT_KEY_PAIR_BUCKET} \
-    CloudFrontKeyPairFileKey=${CLOUD_FRONT_KEY_PAIR_FILE_KEY}
+  ls
+  cd ../../cloudformation
+  ls
+  aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
+
+  aws --region ${REGION} cloudformation deploy \
+      --template-file events.yaml \
+      --s3-bucket ${CODE_UPLOAD_BUCKET} \
+      --s3-prefix ${CODE_S3_PREFIX} \
+      --stack-name ${STACK_NAME} \
+      --capabilities CAPABILITY_NAMED_IAM \
+      --no-fail-on-empty-changeset \
+      --parameter-overrides \
+      InstanceName=${INSTANCE} \
+      Version=${LAMBDA_VERSION} \
+      LambdaCodeS3Bucket=${CODE_UPLOAD_BUCKET} \
+      LambdaCodeS3Key="${CODE_S3_PREFIX}/${CODE_ZIP}" \
+      RealmName=${REALM} \
+      PythonRuntime=${DEFAULT_PYTHON_RUNTIME} \
+      CloudFrontKeyPairID=${CLOUD_FRONT_KEY_PAIR_ID} \
+      CloudFrontKeyPairBucket=${CLOUD_FRONT_KEY_PAIR_BUCKET} \
+      CloudFrontKeyPairFileKey=${CLOUD_FRONT_KEY_PAIR_FILE_KEY}
+}
+
+deploy

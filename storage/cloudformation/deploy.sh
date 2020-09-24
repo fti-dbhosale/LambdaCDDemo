@@ -13,28 +13,32 @@ REGION="ap-south-1"
 CODE_S3_PREFIX="${CODE_S3_PREFIX}.storage-function"
 
 CODE_ZIP="storage-function.zip"
-rm ./storage/cloudformation/${CODE_ZIP}
-cd ./storage/lambda
 
-pip3 install -r ./requirements.txt --target ./
-zip -r ../cloudformation/${CODE_ZIP} .
+deploy(){
+  rm ./storage/cloudformation/${CODE_ZIP}
+  cd ./storage/lambda
 
-ls
-cd ../cloudformation
-ls
-aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
+  pip3 install -r ./requirements.txt --target ./
+  zip -r ../cloudformation/${CODE_ZIP} .
 
-aws --region ${REGION} cloudformation deploy \
-    --template-file storage.yaml \
-    --s3-bucket ${CODE_UPLOAD_BUCKET} \
-    --s3-prefix ${CODE_S3_PREFIX} \
-    --stack-name ${STACK_NAME} \
-    --capabilities CAPABILITY_NAMED_IAM \
-    --no-fail-on-empty-changeset \
-    --parameter-overrides \
-    InstanceName=${INSTANCE} \
-    Version=${LAMBDA_VERSION} \
-    LambdaCodeS3Bucket=${CODE_UPLOAD_BUCKET} \
-    LambdaCodeS3Key="${CODE_S3_PREFIX}/${CODE_ZIP}" \
-    RealmName=${REALM} \
-    PythonRuntime=${DEFAULT_PYTHON_RUNTIME}
+  ls
+  cd ../cloudformation
+  ls
+  aws --region ${REGION} s3 cp ${CODE_ZIP} s3://${CODE_UPLOAD_BUCKET}/${CODE_S3_PREFIX}/${CODE_ZIP}
+
+  aws --region ${REGION} cloudformation deploy \
+      --template-file storage.yaml \
+      --s3-bucket ${CODE_UPLOAD_BUCKET} \
+      --s3-prefix ${CODE_S3_PREFIX} \
+      --stack-name ${STACK_NAME} \
+      --capabilities CAPABILITY_NAMED_IAM \
+      --no-fail-on-empty-changeset \
+      --parameter-overrides \
+      InstanceName=${INSTANCE} \
+      Version=${LAMBDA_VERSION} \
+      LambdaCodeS3Bucket=${CODE_UPLOAD_BUCKET} \
+      LambdaCodeS3Key="${CODE_S3_PREFIX}/${CODE_ZIP}" \
+      RealmName=${REALM} \
+      PythonRuntime=${DEFAULT_PYTHON_RUNTIME}
+}
+deploy
