@@ -24,9 +24,8 @@ rm ./cloudformation/${CODE_ZIP}
 cd ./events/lambda/api
 
 pip3 install -r ./requirements.txt --target ./
-zip -r ../../cloudformation/${CODE_ZIP} .
-
 cp -r /root/LambdaCDDemo/events/lambda/dispatcher dispatcher
+zip -r ../../cloudformation/${CODE_ZIP} .
 
 ls
 cd ../../cloudformation
