@@ -23,7 +23,7 @@ test_dev_stack_deploy_steps: &test_dev_stack_deploy_steps
     - attach_workspace:
         at: ~/LambdaCDDemo
     - run:
-        name: Install awscli, jq and npm
+        name: Install awscli
         command: |
           apt-get update
           apt-get install -y jq zip python3-pip
@@ -46,7 +46,7 @@ test_dev_storage_deploy_steps: &test_dev_storage_deploy_steps
     - attach_workspace:
         at: ~/LambdaCDDemo
     - run:
-        name: Install awscli, jq and npm
+        name: Install awscli
         command: |
           apt-get update
           apt-get install -y jq zip python3-pip
