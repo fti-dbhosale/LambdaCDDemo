@@ -221,8 +221,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: event_search.search
+      FunctionName: !Sub EventSearchFunction-${RealmName} 
       Policies:
-      FunctionName: !Sub EventSearchFunction-${RealmName}        
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
