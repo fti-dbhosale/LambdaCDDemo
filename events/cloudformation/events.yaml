@@ -221,7 +221,9 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: event_search.search
-      FunctionName: !Sub EventSearchFunction-${RealmName} 
+      FunctionName: !Sub EventSearchFunction-${RealmName}
+      MemorySize: 2048
+      Timeout: 30
       Policies:
         - Version: "2012-10-17"
           Statement:
