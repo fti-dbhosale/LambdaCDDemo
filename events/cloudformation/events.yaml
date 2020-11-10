@@ -373,3 +373,6 @@ Outputs:
   EventFunctionIamRole:
     Description: "Implicit IAM Role created for events function"
     Value: !GetAtt EventSearchFunction.Arn
+  EventNotifyTopicArm:
+    Description: "Implicit IAM Role created for event notify topic"
+    Value: !Ref EventNotifyTopic
