@@ -90,7 +90,7 @@ Resources:
       TimeToLiveSpecification:
         AttributeName: TTL
         Enabled: true
-  ComputingClusterJobLogTableWriteCapacityScalableTarget:
+  EventTableWriteCapacityScalableTarget:
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties:
       MaxCapacity: 10000
@@ -99,24 +99,24 @@ Resources:
         "Fn::Join":
           - "/"
           - - table
-            - Ref: ComputingClusterJobLogTable
+            - Ref: EventTable
       RoleARN: !Ref AutoScalingDynamoDBRoleArn
       ScalableDimension: "dynamodb:table:WriteCapacityUnits"
       ServiceNamespace: dynamodb
-  ComputingClusterJobLogTableWriteScalingPolicy:
+  EventTableWriteScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
-      PolicyName: ComputingClusterJobLogTableWriteAutoScalingPolicy
+      PolicyName: EventTableWriteAutoScalingPolicy
       PolicyType: TargetTrackingScaling
       ScalingTargetId:
-        Ref: ComputingClusterJobLogTableWriteCapacityScalableTarget
+        Ref: EventTableWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
         TargetValue: 70
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
-  ComputingClusterJobLogTableReadCapacityScalableTarget:
+  EventTableReadCapacityScalableTarget:
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties:
       MaxCapacity: 10000
@@ -125,24 +125,24 @@ Resources:
         "Fn::Join":
           - "/"
           - - table
-            - Ref: ComputingClusterJobLogTable
+            - Ref: EventTable
       RoleARN: !Ref AutoScalingDynamoDBRoleArn
       ScalableDimension: "dynamodb:table:ReadCapacityUnits"
       ServiceNamespace: dynamodb
-  ComputingClusterJobLogTableReadScalingPolicy:
+  EventTableReadScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
-      PolicyName: ComputingClusterJobLogTableReadAutoScalingPolicy
+      PolicyName: EventTableReadAutoScalingPolicy
       PolicyType: TargetTrackingScaling
       ScalingTargetId:
-        Ref: ComputingClusterJobLogTableReadCapacityScalableTarget
+        Ref: EventTableReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
         TargetValue: 70
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
-  ComputingClusterJobLogTableIDIndexWriteCapacityScalableTarget:
+  EventTableIDIndexWriteCapacityScalableTarget:
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties:
       MaxCapacity: 10000
@@ -151,26 +151,26 @@ Resources:
         "Fn::Join":
           - "/"
           - - table
-            - Ref: ComputingClusterJobLogTable
+            - Ref: EventTable
             - index
             - ID-index
       RoleARN: !Ref AutoScalingDynamoDBRoleArn
       ScalableDimension: "dynamodb:index:WriteCapacityUnits"
       ServiceNamespace: dynamodb
-  ComputingClusterJobLogTableIDIndexWriteScalingPolicy:
+  EventTableIDIndexWriteScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
-      PolicyName: ComputingClusterJobLogTableIDIndexWriteAutoScalingPolicy
+      PolicyName: EventTableIDIndexWriteAutoScalingPolicy
       PolicyType: TargetTrackingScaling
       ScalingTargetId:
-        Ref: ComputingClusterJobLogTableIDIndexWriteCapacityScalableTarget
+        Ref: EventTableIDIndexWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
         TargetValue: 70
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
-  ComputingClusterJobLogTableIDIndexReadCapacityScalableTarget:
+  EventTableIDIndexReadCapacityScalableTarget:
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties:
       MaxCapacity: 10000
@@ -179,19 +179,19 @@ Resources:
         "Fn::Join":
           - "/"
           - - table
-            - Ref: ComputingClusterJobLogTable
+            - Ref: EventTable
             - index
             - ID-index
       RoleARN: !Ref AutoScalingDynamoDBRoleArn
       ScalableDimension: "dynamodb:index:ReadCapacityUnits"
       ServiceNamespace: dynamodb
-  ComputingClusterJobLogTableIDIndexReadScalingPolicy:
+  EventTableIDIndexReadScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
-      PolicyName: ComputingClusterJobLogTableIDIndexReadAutoScalingPolicy
+      PolicyName: EventTableIDIndexReadAutoScalingPolicy
       PolicyType: TargetTrackingScaling
       ScalingTargetId:
-        Ref: ComputingClusterJobLogTableIDIndexReadCapacityScalableTarget
+        Ref: EventTableIDIndexReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
         TargetValue: 70
         ScaleInCooldown: 60
