@@ -142,62 +142,6 @@ Resources:
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
-  EventTableIDIndexWriteCapacityScalableTarget:
-    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-    Properties:
-      MaxCapacity: 10000
-      MinCapacity: 5
-      ResourceId:
-        "Fn::Join":
-          - "/"
-          - - table
-            - Ref: EventTable
-            - index
-            - ID-index
-      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
-      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
-      ServiceNamespace: dynamodb
-  EventTableIDIndexWriteScalingPolicy:
-    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-    Properties:
-      PolicyName: EventTableIDIndexWriteAutoScalingPolicy
-      PolicyType: TargetTrackingScaling
-      ScalingTargetId:
-        Ref: EventTableIDIndexWriteCapacityScalableTarget
-      TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
-        ScaleInCooldown: 60
-        ScaleOutCooldown: 60
-        PredefinedMetricSpecification:
-          PredefinedMetricType: DynamoDBWriteCapacityUtilization
-  EventTableIDIndexReadCapacityScalableTarget:
-    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
-    Properties:
-      MaxCapacity: 10000
-      MinCapacity: 5
-      ResourceId:
-        "Fn::Join":
-          - "/"
-          - - table
-            - Ref: EventTable
-            - index
-            - ID-index
-      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
-      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
-      ServiceNamespace: dynamodb
-  EventTableIDIndexReadScalingPolicy:
-    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
-    Properties:
-      PolicyName: EventTableIDIndexReadAutoScalingPolicy
-      PolicyType: TargetTrackingScaling
-      ScalingTargetId:
-        Ref: EventTableIDIndexReadCapacityScalableTarget
-      TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
-        ScaleInCooldown: 60
-        ScaleOutCooldown: 60
-        PredefinedMetricSpecification:
-          PredefinedMetricType: DynamoDBReadCapacityUtilization
 
   AutoScalingDynamoDBRole:
     Type: 'AWS::IAM::Role'
@@ -227,6 +171,7 @@ Resources:
                   - 'cloudwatch:SetAlarmState'
                   - 'cloudwatch:DeleteAlarms'
                 Resource: '*'
+
   EventsConfigTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
