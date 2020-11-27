@@ -181,7 +181,7 @@ Resources:
           - - table
             - Ref: EventTable
             - index
-            - ID-index
+            - userID-eventCategory-zoneID-EventDate-index
       RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:index:ReadCapacityUnits"
       ServiceNamespace: dynamodb
