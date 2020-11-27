@@ -100,7 +100,7 @@ Resources:
           - "/"
           - - table
             - Ref: EventTable
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:table:WriteCapacityUnits"
       ServiceNamespace: dynamodb
   EventTableWriteScalingPolicy:
@@ -126,7 +126,7 @@ Resources:
           - "/"
           - - table
             - Ref: EventTable
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:table:ReadCapacityUnits"
       ServiceNamespace: dynamodb
   EventTableReadScalingPolicy:
@@ -154,7 +154,7 @@ Resources:
             - Ref: EventTable
             - index
             - ID-index
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:index:WriteCapacityUnits"
       ServiceNamespace: dynamodb
   EventTableIDIndexWriteScalingPolicy:
@@ -182,7 +182,7 @@ Resources:
             - Ref: EventTable
             - index
             - ID-index
-      RoleARN: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:index:ReadCapacityUnits"
       ServiceNamespace: dynamodb
   EventTableIDIndexReadScalingPolicy:
@@ -199,6 +199,34 @@ Resources:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
 
+  AutoScalingDynamoDBRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: ScalingDynamoDB
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:DescribeTable'
+                  - 'dynamodb:UpdateTable'
+                  - 'cloudwatch:PutMetricAlarm'
+                  - 'cloudwatch:DescribeAlarms'
+                  - 'cloudwatch:GetMetricStatistics'
+                  - 'cloudwatch:SetAlarmState'
+                  - 'cloudwatch:DeleteAlarms'
+                Resource: '*'
   EventsConfigTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
