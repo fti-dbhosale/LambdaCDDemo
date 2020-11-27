@@ -466,6 +466,9 @@ Parameters:
   CloudFrontKeyPairFileKey:
     Description: CloudFront Key Pair File Key
     Type: String
+  AutoScalingDynamoDBRoleArn:
+    Type: String
+    Default: !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/dynamodb.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_DynamoDBTable
 Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
