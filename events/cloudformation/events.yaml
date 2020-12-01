@@ -387,8 +387,7 @@ Resources:
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
           ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
-          ENV_EventNotifyTopic:
-            - !Ref 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/EmailNotify'
+          ENV_EventNotifyTopic: 'https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/EmailNotify'
       Events:
         GetEvents:
           Type: Api
