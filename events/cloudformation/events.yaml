@@ -142,6 +142,7 @@ Resources:
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
+
   EventTableIDIndexWriteCapacityScalableTarget:
     Type: "AWS::ApplicationAutoScaling::ScalableTarget"
     Properties:
@@ -185,7 +186,6 @@ Resources:
       RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
       ScalableDimension: "dynamodb:index:ReadCapacityUnits"
       ServiceNamespace: dynamodb
-
   EventTableIDIndexReadScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
@@ -387,6 +387,7 @@ Resources:
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
           ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
+          ENV_EventNotifyTopic: !Ref EventNotifyTopic
       Events:
         GetEvents:
           Type: Api
