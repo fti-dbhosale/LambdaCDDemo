@@ -387,7 +387,8 @@ Resources:
           ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
           ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
           ENV_CloudFrontDeviceImagesBucketDomainName: DevicesImagesBucketDistribution-${RealmName}-DomainName
-          ENV_EventNotifyTopic: !Ref EventNotifyTopic
+          ENV_EventNotifyTopic: 
+            Ref: EventNotifyTopic
       Events:
         GetEvents:
           Type: Api
