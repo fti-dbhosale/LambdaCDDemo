@@ -113,7 +113,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -141,7 +141,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -171,7 +171,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -201,7 +201,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -231,7 +231,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryEventTypeEventDateIndexWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -261,7 +261,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryEventTypeEventDateIndexReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -291,7 +291,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryZoneIDEventDateIndexWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -321,7 +321,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryZoneIDEventDateIndexReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -351,7 +351,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryPersonIDEventDateIndexWriteCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
@@ -381,7 +381,7 @@ Resources:
       ScalingTargetId:
         Ref: EventTableUserIDEventCategoryPersonIDEventDateIndexReadCapacityScalableTarget
       TargetTrackingScalingPolicyConfiguration:
-        TargetValue: 70
+        TargetValue: 40
         ScaleInCooldown: 60
         ScaleOutCooldown: 60
         PredefinedMetricSpecification:
