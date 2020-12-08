@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: 2010-09-09
+WSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: >
   Setting thermal-events
@@ -12,6 +12,409 @@ Globals:
       Key: !Ref LambdaCodeS3Key
 
 Resources:
+  EventTable:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: !Join
+        - ''
+        - - Events-
+          - !Ref RealmName
+      AttributeDefinitions:
+        - AttributeName: EventID
+          AttributeType: S
+        - AttributeName: EventDate
+          AttributeType: S
+        - AttributeName: userID-eventCategory-zoneID
+          AttributeType: S
+        - AttributeName: userID-eventCategory-personID
+          AttributeType: S
+        - AttributeName: userID-eventCategory-eventType
+          AttributeType: S
+        - AttributeName: userID-eventCategory-zoneID-eventType
+          AttributeType: S
+      KeySchema:
+        - AttributeName: EventID
+          KeyType: HASH
+        - AttributeName: EventDate
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: userID-eventCategory-zoneID-GSI
+          KeySchema:
+            - AttributeName: userID-eventCategory-zoneID
+              KeyType: HASH
+            - AttributeName: EventDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 50
+            WriteCapacityUnits: 10
+        - IndexName: userID-eventCategory-personID-GSI
+          KeySchema:
+            - AttributeName: userID-eventCategory-personID
+              KeyType: HASH
+            - AttributeName: EventDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 50
+            WriteCapacityUnits: 10
+        - IndexName: userID-eventCategory-eventType-EventDate-index
+          KeySchema:
+            - AttributeName: userID-eventCategory-eventType
+              KeyType: HASH
+            - AttributeName: EventDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 50
+            WriteCapacityUnits: 10
+        - IndexName: userID-eventCategory-zoneID-eventType-EventDate-index
+          KeySchema:
+            - AttributeName: userID-eventCategory-zoneID-eventType
+              KeyType: HASH
+            - AttributeName: EventDate
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 50
+            WriteCapacityUnits: 10
+      ProvisionedThroughput:
+        ReadCapacityUnits: 50
+        WriteCapacityUnits: 50
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
+
+  EventTableWriteCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:table:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableWriteScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableWriteAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableWriteCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  EventTableReadCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:table:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableReadScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableReadAutoScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableReadCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexWriteCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 10
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-zoneID-eventType-EventDate-index
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexWriteScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexWriteCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexReadCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-zoneID-eventType-EventDate-index
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexReadScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryZoneIDEventTypeEventDateIndexReadCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  EventTableUserIDEventCategoryEventTypeEventDateIndexWriteCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 10
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-eventType-EventDate-index
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryEventTypeEventDateIndexWriteScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryEventTypeEventDateIndexWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryEventTypeEventDateIndexWriteCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  EventTableUserIDEventCategoryEventTypeEventDateIndexReadCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-eventType-EventDate-index
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryEventTypeEventDateIndexReadScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryEventTypeEventDateIndexReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryEventTypeEventDateIndexReadCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  EventTableUserIDEventCategoryZoneIDEventDateIndexWriteCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 10
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-zoneID-GSI
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryZoneIDEventDateIndexWriteScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryZoneIDEventDateIndexWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryZoneIDEventDateIndexWriteCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  EventTableUserIDEventCategoryZoneIDEventDateIndexReadCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-zoneID-GSI
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryZoneIDEventDateIndexReadCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  EventTableUserIDEventCategoryPersonIDEventDateIndexWriteCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 10
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-personID-GSI
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:WriteCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryPersonIDEventDateIndexWriteScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryPersonIDEventDateIndexWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryPersonIDEventDateIndexWriteCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+
+  EventTableUserIDEventCategoryPersonIDEventDateIndexReadCapacityScalableTarget:
+    Type: "AWS::ApplicationAutoScaling::ScalableTarget"
+    Properties:
+      MaxCapacity: 10000
+      MinCapacity: 50
+      ResourceId:
+        "Fn::Join":
+          - "/"
+          - - table
+            - Ref: EventTable
+            - index
+            - userID-eventCategory-personID-GSI
+      RoleARN: !GetAtt AutoScalingDynamoDBRole.Arn
+      ScalableDimension: "dynamodb:index:ReadCapacityUnits"
+      ServiceNamespace: dynamodb
+
+  EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy:
+    Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
+    Properties:
+      PolicyName: EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: EventTableUserIDEventCategoryPersonIDEventDateIndexReadCapacityScalableTarget
+      TargetTrackingScalingPolicyConfiguration:
+        TargetValue: 70
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+
+  AutoScalingDynamoDBRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: ScalingDynamoDB
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'dynamodb:DescribeTable'
+                  - 'dynamodb:UpdateTable'
+                  - 'cloudwatch:PutMetricAlarm'
+                  - 'cloudwatch:DescribeAlarms'
+                  - 'cloudwatch:GetMetricStatistics'
+                  - 'cloudwatch:SetAlarmState'
+                  - 'cloudwatch:DeleteAlarms'
+                Resource: '*'
 
   AutoScalingDynamoDBRole:
     Type: 'AWS::IAM::Role'
