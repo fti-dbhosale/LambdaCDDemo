@@ -94,21 +94,3 @@ Parameters:
   CloudFrontKeyPairFileKey:
     Description: CloudFront Key Pair File Key
     Type: String
-Outputs:
-  # Find out more about other implicit resources you can reference within SAM
-  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
-  EventDispatchFunctionArn:
-    Description: "Events dispatcher lambda function ARN"
-    Value: !Ref EventDispatchFunction
-  EventApi:
-    Description: "API Gateway endpoint for events-api"
-    Value: !Sub "https://${EventsApi}.execute-api.${AWS::Region}.amazonaws.com/"
-  EventFunction:
-    Description: "Events Lambda function ARN"
-    Value: !GetAtt EventSearchFunction.Arn
-  EventFunctionIamRole:
-    Description: "Implicit IAM Role created for events function"
-    Value: !GetAtt EventSearchFunction.Arn
-  EventNotifyTopicArm:
-    Description: "Implicit IAM Role created for event notify topic"
-    Value: !Ref EventNotifyTopic
