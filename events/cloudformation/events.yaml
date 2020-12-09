@@ -313,7 +313,7 @@ Resources:
       ScalableDimension: "dynamodb:index:ReadCapacityUnits"
       ServiceNamespace: dynamodb
 
-  EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy:
+  EventTableUserIDEventCategoryPersonIDEventDateIndexReadScalingPolicy:
     Type: "AWS::ApplicationAutoScaling::ScalingPolicy"
     Properties:
       PolicyName: EventTableUserIDEventCategoryZoneIDEventDateIndexReadScalingPolicy
