@@ -416,22 +416,158 @@ Resources:
                   - 'cloudwatch:DeleteAlarms'
                 Resource: '*'
 
-  EventsConfigTable:
+  EventsNotificationConfigsTable:
     Type: 'AWS::DynamoDB::Table'
     Properties:
       TableName: !Join
         - ''
-        - - EventsConfig-
+        - - EventsNotificationConfigs-
           - !Ref RealmName
       AttributeDefinitions:
-        - AttributeName: EventType
+        - AttributeName: UserID-EventCatagory-EventType
           AttributeType: S
       KeySchema:
-        - AttributeName: EventType
+        - AttributeName: UserID-EventCatagory-EventType
           KeyType: HASH
       ProvisionedThroughput:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
+
+  EventDispatchFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: dispatcher/event_dispatcher.lambda_handler
+      FunctionName: !Sub EventDispatch-${RealmName}
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource: !Ref EventNotifyTopic
+            - Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:Query"
+                - "dynamodb:Scan"
+                - "dynamodb:DeleteItem"
+                - "dynamodb:PutItem"
+                - "dynamodb:UpdateItem"
+              Resource:
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ActivityLog-*'
+      Events:
+        SNS1:
+          Type: SNS
+          Properties:
+            Topic:
+              Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
+      Environment:
+        Variables:
+          ENV_DEFAULT_RETENTION_DAYS: !Ref DefaultRetention
+          ENV_VALID_EVENT_DAYS: 3
+          ENV_TARGET_SNS_TOPIC_ARN: !Ref EventNotifyTopic
+          ENV_EVENT_TABLE_NAME: !Join
+            - ''
+            - - Events-
+              - !Ref RealmName
+          ENV_ACTIVITYLOG_TABLE_NAME: !Join
+            - ''
+            - - ActivityLog-
+              - !Ref RealmName
+  EventNotifyTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      TopicName: EventNotifyTopic
+  EmailNotifyQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: EmailNotify
+
+  EventNotifyTopicToEmailNotifyQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "allow-sns-messages"
+            Effect: Allow
+            Principal: "*"
+            Resource: !GetAtt
+              - EmailNotifyQueue
+              - Arn
+            Action: "SQS:SendMessage"
+            Condition:
+              ArnEquals:
+                "aws:SourceArn": !Ref EventNotifyTopic
+      Queues:
+        - Ref: EmailNotifyQueue
+
+  EmailEventFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: dispatcher/event_email_notifier.lambda_handler
+      FunctionName: !Sub EventEmail
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - "dynamodb:GetItem"
+                - "dynamodb:Query"
+              Resource:
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/EventsNotificationConfigs-*'
+            - Effect: Allow
+              Action:
+                - "s3:GetObject"
+              Resource:
+                - '*'
+            - Effect: Allow
+              Action:
+                - "sqs:*"
+              Resource:
+                - '*'
+            - Effect: Allow
+              Action:
+                - "ses:*"
+              Resource:
+                - '*'
+      Environment:
+        Variables:
+          ENV_EMAIL_CONFIG_TABLE_NAME: !Join
+            - ''
+            - - EventsNotificationConfigs-
+              - !Ref RealmName
+          EMAIL_NOTIFY_SENDER: !Ref EmailNotifySender
+          EMAIL_NOTIFY_SENDERNAME: !Ref EmailNotifySenderName
+          ENV_AWS_REGION: !Ref EmailNotifySESRegion
+          ENV_CloudFrontKeyPairID: !Ref CloudFrontKeyPairID
+          ENV_CloudFrontKeyPairBucket: !Ref CloudFrontKeyPairBucket
+          ENV_CloudFrontKeyPairFileKey: !Ref CloudFrontKeyPairFileKey
+          ENV_CloudFrontDeviceImagesBucketDomainName:
+            Fn::ImportValue: !Sub DevicesImagesBucketDistribution-${RealmName}-DomainName
+          QUEUE_URL: !Sub https://sqs.${AWS::Region}.amazonaws.com/${AWS::AccountId}/EmailNotify
+      Events:
+        SQS1:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt EmailNotifyQueue.Arn
+            BatchSize: 1
+
+  # Create the subscription to the 'EmailNotifyQueue'
+  EmailNotifyQueueSubscription:
+    Type: 'AWS::SNS::Subscription'
+    Properties:
+      TopicArn: !Ref EventNotifyTopic
+      Endpoint: !GetAtt
+        - EmailNotifyQueue
+        - Arn
+      Protocol: sqs
+      RawMessageDelivery: 'true'
+      FilterPolicy:
+        target:
+          - email
+
 Parameters:
   InstanceName:
     Default: dev
