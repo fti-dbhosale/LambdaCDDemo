@@ -130,6 +130,5 @@ def handle_sns_event(event):
 def lambda_handler(event, context):
     logging.getLogger().setLevel(logging.INFO)
     for record in event['Records']:
-        if 'aws:sns' == record['EventSource'] and record['Sns']['Message']:
-            handle_sns_event(json.loads(record['Sns']['Message']))
+        handle_sns_event(json.loads(record['Sns']['Message']))
     return True
