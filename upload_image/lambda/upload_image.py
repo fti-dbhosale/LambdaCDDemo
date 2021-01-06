@@ -15,7 +15,7 @@ def put(event, context):
     except Exception as e:
         raise IOError(e)
     response = { 'body': {
-            'file_path': BUCKET_NAME + "/" + file_path
+            'file_path': file_path
                 }
             }
     return json_response(response)

@@ -141,7 +141,7 @@ Resources:
               Action:
               - sns:Publish
               Resource: '*'
-
+              
 Parameters:
   InstanceName:
     Default: dev
@@ -155,15 +155,19 @@ Parameters:
   Version:
     Description: stack version.
     Type: String
+    Default: 0.1
   LambdaCodeS3Bucket:
     Description: The S3 Bucket of lambda code
     Type: String
+    Default: demo-lambda-pipeline
   LambdaCodeS3Key:
     Description: The S3 Key of lambda code
     Type: String
+    Default: test.cloudformation
   RealmName:
     Description: target data realm.
     Type: String
+    Default: dev
   PythonRuntime:
     Description: Python runtime
     Type: String
