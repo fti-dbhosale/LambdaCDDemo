@@ -129,7 +129,7 @@ def handle_sns_event(event):
 
 def lambda_handler(event, context):
     logging.getLogger().setLevel(logging.INFO)
-    print(event)
     for record in event['Records']:
-        handle_sns_event(json.loads(record))
+        if record['body']['Records']:
+        handle_sns_event(json.loads(record['body']['Records']))
     return True
