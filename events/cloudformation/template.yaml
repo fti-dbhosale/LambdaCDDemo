@@ -133,6 +133,17 @@ Resources:
       Queues:
         - Ref: EventDispatchQueue
 
+  EventDispatchQueueSubscription:
+    Type: 'AWS::SNS::Subscription'
+    Properties:
+      TopicArn:
+        Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
+      Endpoint: !GetAtt
+        - EventDispatchQueue
+        - Arn
+      Protocol: sqs
+      RawMessageDelivery: 'true'
+
   EventDispatchFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
