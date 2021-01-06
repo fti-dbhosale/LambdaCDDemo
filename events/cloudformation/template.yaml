@@ -108,6 +108,31 @@ Resources:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
 
+  EventDispatchQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: EventDispatch
+
+  EventDispatchQueueQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "allow-sns-messages"
+            Effect: Allow
+            Principal: "*"
+            Resource: !GetAtt
+              - EventDispatchQueue
+              - Arn
+            Action: "SQS:SendMessage"
+            Condition:
+              ArnEquals:
+                "aws:SourceArn":
+                  Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
+      Queues:
+        - Ref: EventDispatchQueue
+
   EventDispatchFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -132,11 +157,11 @@ Resources:
                 - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
                 - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ActivityLog-*'
       Events:
-        SNS1:
-          Type: SNS
+        SQS1:
+          Type: SQS
           Properties:
-            Topic:
-              Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
+            Queue: !GetAtt EventDispatchQueue.Arn
+            BatchSize: 1
       Environment:
         Variables:
           ENV_VALID_EVENT_DAYS: 3
@@ -153,6 +178,7 @@ Resources:
             - ''
             - - ActivityLog-
               - !Ref RealmName
+
   EventNotifyTopic:
     Type: 'AWS::SNS::Topic'
     Properties:
