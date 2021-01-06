@@ -185,7 +185,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       Handler: dispatcher/email.lambda_handler
-      FunctionName: !Sub EventEmail
+      FunctionName: !Sub EventEmail-dev
       Events:
         SQS1:
           Type: SQS
