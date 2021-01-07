@@ -122,7 +122,7 @@ Resources:
               Resource: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableQueue.Arn
       Environment:
         Variables:
-          NODE_TARGET_SQS: !Ref DynamoTriggerDispatchMarkerLogToEventsTableQueue
+          TARGET_SQS: !Ref DynamoTriggerDispatchMarkerLogToEventsTableQueue
 
   DynamoTriggerDispatchMarkerLogToEventsTableDLQ:
     Type: 'AWS::SQS::Queue'
