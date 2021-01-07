@@ -111,7 +111,7 @@ Resources:
   DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      FunctionName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableSplitRecord-${InstanceName}-${Version}
+      FunctionName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableSplitRecord-${InstanceName}
       Handler: dispatcher/dynamo_db_split_record.handler
       Policies:
         - Version: "2012-10-17"
@@ -127,7 +127,7 @@ Resources:
   DynamoTriggerDispatchMarkerLogToEventsTableDLQ:
     Type: 'AWS::SQS::Queue'
     Properties:
-      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableDLQ-${InstanceName}-${Version}
+      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableDLQ-${InstanceName}
       MessageRetentionPeriod: 1209600
   DynamoTriggerDispatchMarkerLogToEventsTableDLQPolicy:
     Type: 'AWS::SQS::QueuePolicy'
@@ -156,7 +156,7 @@ Resources:
   DynamoTriggerDispatchMarkerLogToEventsTableQueue:
     Type: 'AWS::SQS::Queue'
     Properties:
-      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableQueue-${InstanceName}-${Version}
+      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableQueue-${InstanceName}
       RedrivePolicy:
         deadLetterTargetArn: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableDLQ.Arn
         maxReceiveCount: 10
