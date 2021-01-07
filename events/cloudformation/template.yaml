@@ -112,7 +112,7 @@ Resources:
     Type: 'AWS::Serverless::Function'
     Properties:
       FunctionName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableSplitRecord-${InstanceName}
-      Handler: dispatcher/dynamo_db_split_record.handler
+      Handler: dispatcher/dynamo_db_split_record.lambda_handler
       Policies:
         - Version: "2012-10-17"
           Statement:
@@ -128,7 +128,7 @@ Resources:
           Type: SNS
           Properties:
             Topic:
-              Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn          
+              Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
 
   DynamoTriggerDispatchMarkerLogToEventsTableDLQ:
     Type: 'AWS::SQS::Queue'
