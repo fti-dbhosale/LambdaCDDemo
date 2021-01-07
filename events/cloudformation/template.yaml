@@ -107,7 +107,7 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
-        
+
   DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
@@ -123,6 +123,28 @@ Resources:
       Environment:
         Variables:
           NODE_TARGET_SQS: !Ref DynamoTriggerDispatchMarkerLogToEventsTableQueue
+
+  DynamoTriggerDispatchMarkerLogToEventsTableDLQ:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableDLQ-${InstanceName}-${Version}
+      MessageRetentionPeriod: 1209600
+  DynamoTriggerDispatchMarkerLogToEventsTableDLQPolicy:
+    Type: 'AWS::SQS::QueuePolicy'
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal: "*"
+            Action:
+              - "sqs:SendMessage"
+            Resource: "*"
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableQueue.Arn
+      Queues:
+        - !Ref DynamoTriggerDispatchMarkerLogToEventsTableDLQ
 
   DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunctionPermission:
     Type: AWS::Lambda::Permission
