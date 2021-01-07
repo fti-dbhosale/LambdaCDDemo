@@ -178,6 +178,10 @@ Resources:
           Statement:
             - Effect: Allow
               Action:
+                - sns:Publish
+              Resource: !Ref EventNotifyTopic            
+            - Effect: Allow
+              Action:
                 - 'dynamodb:Query'
               Resource:
                 - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
