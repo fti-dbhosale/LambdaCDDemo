@@ -123,12 +123,19 @@ Resources:
       Environment:
         Variables:
           TARGET_SQS: !Ref DynamoTriggerDispatchMarkerLogToEventsTableQueue
+      Events:
+        SNS1:
+          Type: SNS
+          Properties:
+            Topic:
+              Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn          
 
   DynamoTriggerDispatchMarkerLogToEventsTableDLQ:
     Type: 'AWS::SQS::Queue'
     Properties:
       QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableDLQ-${InstanceName}
       MessageRetentionPeriod: 1209600
+
   DynamoTriggerDispatchMarkerLogToEventsTableDLQPolicy:
     Type: 'AWS::SQS::QueuePolicy'
     Properties:
