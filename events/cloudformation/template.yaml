@@ -173,19 +173,13 @@ Resources:
               Action:
                 - 'dynamodb:Query'
               Resource:
-                - Fn::ImportValue: !Sub ActivityLogTableArn-${RealmName}
-                - Fn::ImportValue: !Sub UserActivityLogTableArn-${RealmName}
-                - Fn::ImportValue: !Sub UserMarkerLogTableArn-${RealmName}
-            - Effect: Allow
-              Action:
-                - 'dynamodb:GetItem'
-              Resource:
-                Fn::ImportValue: !Sub DeviceDataRetentionSubscriptionTableArn-${RealmName}
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ActivityLog-*'
             - Effect: Allow
               Action:
                 - 'dynamodb:PutItem'
               Resource:
-                Fn::ImportValue: !Sub UserMarkerLogTableArn-${RealmName}
+                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
       Environment:
         Variables:
           ENV_VALID_EVENT_DAYS: 3
