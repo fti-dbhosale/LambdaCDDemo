@@ -10,8 +10,8 @@ sqs = boto3.client('sqs')
 queue_url = os.environ['TARGET_SQS']
 def lambda_handler(event, context):
     logging.getLogger().setLevel(logging.INFO)
-    print(event)
     for record in event['Records']:
+        logging.info('handle_sns_event for record: {}'.format(record))
         if 'aws:sns' == record['EventSource'] and record['Sns']['Message']:
             response = sqs.send_message(
                 QueueUrl=queue_url,

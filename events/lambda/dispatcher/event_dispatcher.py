@@ -88,6 +88,10 @@ def get_activity_log(device_id):
     else:
         return None
 
+def get_formated_date(date):
+    tdatetime = datetime.strptime(date, '%Y-%m-%d %H:%M:%S%z')
+    return tdatetime.strftime('%Y-%m-%d %H:%M:%S+0900')
+
 def handle_sns_event(event):
     for record in event['Records']:
         logging.info('handle_sns_event for record: {}'.format(record))
@@ -97,6 +101,7 @@ def handle_sns_event(event):
                     new_item = record['dynamodb']['NewImage']
                     event_json = from_dynamodb_to_json(new_item)
                     activity_log = get_activity_log(event_json['DeviceID'])
+                    event_json['payload']['DateTime'] = get_formated_date(event_json['payload']['DateTime'])
                     user_id = activity_log['UserID']
                     event_json['UserID'] = user_id
                     event_json['OrganizationID'] = user_id
@@ -109,7 +114,7 @@ def handle_sns_event(event):
                     event_json['EventCatagory'] = str(event_json['payload']['EventCatagory'])
                     event_json['userID-eventCategory-zoneID'] = user_id + "." + str(event_json['payload']['EventCatagory']) + "." + str(event_json['zoneID'])
                     event_json['userID-eventCategory-eventType'] = user_id + "." + str(event_json['payload']['EventCatagory']) + "." + str(event_json['EventType'])
-                    event_json['userID-eventCategory-zoneID-eventType'] = user_id + "." + str(event_json['payload']['EventCatagory']) + "." + str(event_json['zoneID']) + "." + str(event_json['EventType'])   
+                    event_json['userID-eventCategory-zoneID-eventType'] = user_id + "." + str(event_json['payload']['EventCatagory']) + "." + str(event_json['zoneID']) + "." + str(event_json['EventType'])
                     event_json['userID-eventCategory-personID'] = user_id + "." + str(event_json['payload']['EventCatagory']) + "." + str(event_json['UserID'])
                     print(event_json)
                     print(user_id)
