@@ -107,72 +107,63 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: '5'
         WriteCapacityUnits: '5'
-
-  EventDispatchQueue:
-    Type: "AWS::SQS::Queue"
-    Properties:
-      QueueName: EventDispatch
-
-  EventDispatchQueueQueuePolicy:
-    Type: AWS::SQS::QueuePolicy
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: "allow-sns-messages"
-            Effect: Allow
-            Principal: "*"
-            Resource: !GetAtt
-              - EventDispatchQueue
-              - Arn
-            Action: "SQS:SendMessage"
-            Condition:
-              ArnEquals:
-                "aws:SourceArn":
-                  Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
-      Queues:
-        - Ref: EventDispatchQueue
-
-  EventDispatchQueueSubscription:
-    Type: 'AWS::SNS::Subscription'
-    Properties:
-      TopicArn:
-        Fn::ImportValue: !Sub MarkerLogTableSNSTopic-${RealmName}-Arn
-      Endpoint: !GetAtt
-        - EventDispatchQueue
-        - Arn
-      Protocol: sqs
-      RawMessageDelivery: 'true'
-
-  EventDispatchFunction:
+        
+  DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunction:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: dispatcher/event_dispatcher.lambda_handler
-      FunctionName: !Sub EventDispatch-${RealmName}
+      FunctionName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableSplitRecord-${InstanceName}-${Version}
+      Handler: dispatcher/dynamo_db_split_record.handler
       Policies:
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
               Action:
-                - sns:Publish
-              Resource: !Ref EventNotifyTopic
+                - sqs:SendMessage
+              Resource: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableQueue.Arn
+      Environment:
+        Variables:
+          NODE_TARGET_SQS: !Ref DynamoTriggerDispatchMarkerLogToEventsTableQueue
+
+  DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableSplitRecordFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+
+  DynamoTriggerDispatchMarkerLogToEventsTableQueue:
+    Type: 'AWS::SQS::Queue'
+    Properties:
+      QueueName: !Sub DynamoTriggerDispatchMarkerLogToEventsTableQueue-${InstanceName}-${Version}
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableDLQ.Arn
+        maxReceiveCount: 10
+
+  EventDispatchFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: !Sub EventDispatch-${RealmName}
+      Handler: dispatcher/event_dispatcher.lambda_handler
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
             - Effect: Allow
               Action:
-                - "dynamodb:GetItem"
-                - "dynamodb:Query"
-                - "dynamodb:Scan"
-                - "dynamodb:DeleteItem"
-                - "dynamodb:PutItem"
-                - "dynamodb:UpdateItem"
+                - 'dynamodb:Query'
               Resource:
-                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Events*'
-                - !Sub 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ActivityLog-*'
-      Events:
-        SQS1:
-          Type: SQS
-          Properties:
-            Queue: !GetAtt EventDispatchQueue.Arn
-            BatchSize: 1
+                - Fn::ImportValue: !Sub ActivityLogTableArn-${RealmName}
+                - Fn::ImportValue: !Sub UserActivityLogTableArn-${RealmName}
+                - Fn::ImportValue: !Sub UserMarkerLogTableArn-${RealmName}
+            - Effect: Allow
+              Action:
+                - 'dynamodb:GetItem'
+              Resource:
+                Fn::ImportValue: !Sub DeviceDataRetentionSubscriptionTableArn-${RealmName}
+            - Effect: Allow
+              Action:
+                - 'dynamodb:PutItem'
+              Resource:
+                Fn::ImportValue: !Sub UserMarkerLogTableArn-${RealmName}
       Environment:
         Variables:
           ENV_VALID_EVENT_DAYS: 3
@@ -189,6 +180,12 @@ Resources:
             - ''
             - - ActivityLog-
               - !Ref RealmName
+      Events:
+        SQSSubscribe:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt DynamoTriggerDispatchMarkerLogToEventsTableQueue.Arn
+            BatchSize: 1
 
   EventNotifyTopic:
     Type: 'AWS::SNS::Topic'
